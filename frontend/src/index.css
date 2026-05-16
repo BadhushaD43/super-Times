@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    background: #023047;
+    color: #f4fbff;
+  }
+
+  input, textarea, select {
+    background: #052f43;
+    color: #f4fbff;
+    border-color: #2b6177;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #8ECAE6;
+  }
+
+  button, a, input, textarea, select {
+    transition-duration: 260ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Hide scrollbar for sliders */
+  .overflow-x-auto::-webkit-scrollbar { display: none; }
+  .overflow-x-auto { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer utilities {
+  .text-yellow-400 {
+    color: var(--primary) !important;
+  }
+
+  .text-gray-300,
+  .text-gray-400 {
+    color: var(--text-secondary) !important;
+  }
+
+  .hover\:text-yellow-400:hover {
+    color: var(--primary) !important;
+  }
+
+  .hover\:text-white:hover {
+    color: var(--text-primary) !important;
+  }
+
+  .bg-yellow-400 {
+    background-color: var(--primary) !important;
+  }
+
+  .hover\:bg-yellow-300:hover {
+    background-color: var(--primary-hover) !important;
+  }
+
+  .bg-yellow-400\/10 {
+    background-color: rgba(255, 183, 3, 0.12) !important;
+  }
+
+  .hover\:border-yellow-400:hover {
+    border-color: var(--primary) !important;
+  }
+
+  .hover\:bg-white\/5:hover,
+  .hover\:bg-white\/10:hover {
+    background-color: rgba(255, 183, 3, 0.14) !important;
+  }
+}
+
+@layer components {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+}
