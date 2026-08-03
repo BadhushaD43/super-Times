@@ -1,6 +1,7 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from typing import List, Optional, Dict
 from datetime import datetime
+
 
 class ProductBase(BaseModel):
     model_config = {"protected_namespaces": ()}
@@ -15,8 +16,10 @@ class ProductBase(BaseModel):
     images: Optional[List[str]] = []
     is_featured: bool = False
 
+
 class ProductCreate(ProductBase):
     pass
+
 
 class ProductUpdate(BaseModel):
     model_config = {"protected_namespaces": ()}
@@ -31,6 +34,7 @@ class ProductUpdate(BaseModel):
     images: Optional[List[str]] = None
     is_featured: Optional[bool] = None
 
+
 class Product(ProductBase):
     id: int
     rating: float
@@ -40,14 +44,17 @@ class Product(ProductBase):
     class Config:
         from_attributes = True
 
+
 class ReviewBase(BaseModel):
     product_id: int
     user_name: str
     rating: float
     comment: str
 
+
 class ReviewCreate(ReviewBase):
     pass
+
 
 class Review(ReviewBase):
     id: int
@@ -55,6 +62,7 @@ class Review(ReviewBase):
 
     class Config:
         from_attributes = True
+
 
 class OrderBase(BaseModel):
     customer_name: str
@@ -64,11 +72,13 @@ class OrderBase(BaseModel):
     pincode: str
     state: str
     district: str
-    products: List[Dict[str, int]]  # [{product_id: qty}]
+    products: List[Dict[str, int]]
     total_price: float
+
 
 class OrderCreate(OrderBase):
     pass
+
 
 class Order(OrderBase):
     id: int
@@ -78,14 +88,17 @@ class Order(OrderBase):
     class Config:
         from_attributes = True
 
+
 class ContactBase(BaseModel):
     name: str
     email: str
     phone: str
     message: str
 
+
 class ContactCreate(ContactBase):
     pass
+
 
 class Contact(ContactBase):
     id: int
@@ -94,10 +107,22 @@ class Contact(ContactBase):
     class Config:
         from_attributes = True
 
+
 class UserLogin(BaseModel):
     username: str
     password: str
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class OTPRequest(BaseModel):
+    username: str
+    password: str
+
+
+class OTPVerify(BaseModel):
+    username: str
+    otp: str
