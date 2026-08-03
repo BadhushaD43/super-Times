@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional, Dict
 from datetime import datetime
 
 
 class ProductBase(BaseModel):
-    model_config = {"protected_namespaces": ()}
+    model_config = ConfigDict(protected_namespaces=())
     name: str
     title: str
     category: str
@@ -13,7 +13,7 @@ class ProductBase(BaseModel):
     price: float
     description: str
     image_key: Optional[str] = None
-    images: Optional[List[str]] = []
+    images: List[str] = Field(default_factory=list)
     is_featured: bool = False
 
 
@@ -22,7 +22,7 @@ class ProductCreate(ProductBase):
 
 
 class ProductUpdate(BaseModel):
-    model_config = {"protected_namespaces": ()}
+    model_config = ConfigDict(protected_namespaces=())
     name: Optional[str] = None
     title: Optional[str] = None
     category: Optional[str] = None
@@ -36,13 +36,11 @@ class ProductUpdate(BaseModel):
 
 
 class Product(ProductBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     rating: float
     total_reviews: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class ReviewBase(BaseModel):
@@ -57,11 +55,9 @@ class ReviewCreate(ReviewBase):
 
 
 class Review(ReviewBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class OrderBase(BaseModel):
@@ -81,12 +77,10 @@ class OrderCreate(OrderBase):
 
 
 class Order(OrderBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     status: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class ContactBase(BaseModel):
@@ -101,11 +95,9 @@ class ContactCreate(ContactBase):
 
 
 class Contact(ContactBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class UserLogin(BaseModel):

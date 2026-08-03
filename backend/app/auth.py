@@ -18,7 +18,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 OTP_EXPIRE_MINUTES = int(os.getenv("OTP_EXPIRE_MINUTES", 5))
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_HOST = os.getenv("SMTP_HOST", "")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASS = os.getenv("SMTP_PASS", "")
@@ -28,7 +28,7 @@ ADMIN_CREDENTIALS = {
     os.getenv("ADMIN_USERNAME", "admin"): os.getenv("ADMIN_PASSWORD", "admin123")
 }
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # In-memory OTP store: {username: (otp_code, expiry_datetime)}
 _otp_store: dict = {}
@@ -77,7 +77,7 @@ def generate_and_send_otp(username: str) -> bool:
     expiry = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
     _otp_store[username] = (otp, expiry)
 
-    if not SMTP_USER or not SMTP_PASS or not ADMIN_EMAIL:
+    if os.getenv("TESTING") == "1" or not SMTP_HOST or not SMTP_USER or not SMTP_PASS or not ADMIN_EMAIL:
         # Dev fallback: print OTP to console
         print(f"[DEV OTP] {username}: {otp}")
         return True

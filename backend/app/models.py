@@ -20,6 +20,14 @@ class Product(Base):
     images = Column(JSON)  # list of image URLs (uploaded)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    def __init__(self, **kwargs):
+        kwargs.setdefault("is_featured", False)
+        kwargs.setdefault("rating", 0.0)
+        kwargs.setdefault("total_reviews", 0)
+        if kwargs.get("images") is None:
+            kwargs["images"] = []
+        super().__init__(**kwargs)
+
 class Review(Base):
     __tablename__ = "reviews"
 
@@ -46,6 +54,10 @@ class Order(Base):
     status = Column(String, default="pending")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    def __init__(self, **kwargs):
+        kwargs.setdefault("status", "pending")
+        super().__init__(**kwargs)
+
 class Contact(Base):
     __tablename__ = "contacts"
 
@@ -63,4 +75,8 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)
     role = Column(String, default="user")  # admin/user
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault("role", "user")
+        super().__init__(**kwargs)
 

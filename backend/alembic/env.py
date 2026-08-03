@@ -1,6 +1,7 @@
 from logging.config import fileConfig
 import os
 from sqlalchemy import engine_from_config, pool, text
+from sqlalchemy.engine import make_url
 from alembic import context
 from dotenv import load_dotenv
 
@@ -18,7 +19,9 @@ target_metadata = Base.metadata
 
 # Override DB URL and schema from environment
 db_url = os.getenv("DATABASE_URL")
-DB_SCHEMA = os.getenv("DB_SCHEMA", "public")
+DATABASE_BACKEND = make_url(db_url).get_backend_name() if db_url else None
+IS_SQLITE = DATABASE_BACKEND == "sqlite"
+DB_SCHEMA = None if IS_SQLITE else os.getenv("DB_SCHEMA", "public")
 
 if db_url:
     config.set_main_option("sqlalchemy.url", db_url)
@@ -31,7 +34,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        include_schemas=True,
+        include_schemas=not IS_SQLITE,
         version_table_schema=DB_SCHEMA,
     )
     with context.begin_transaction():
@@ -39,18 +42,20 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
+    connect_args = {"check_same_thread": False} if IS_SQLITE else {"options": f"-csearch_path={DB_SCHEMA}"}
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        connect_args={"options": f"-csearch_path={DB_SCHEMA}"},
+        connect_args=connect_args,
     )
     with connectable.connect() as connection:
-        connection.execute(text(f"SET search_path TO {DB_SCHEMA}"))
+        if DB_SCHEMA:
+            connection.execute(text(f"SET search_path TO {DB_SCHEMA}"))
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            include_schemas=True,
+            include_schemas=not IS_SQLITE,
             version_table_schema=DB_SCHEMA,
         )
         with context.begin_transaction():

@@ -1,15 +1,15 @@
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .database import SQLALCHEMY_DATABASE_URL
+from .database import engine
 from .models import Product, Review
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 
 def seed_data():
     db = SessionLocal()
     try:
+        if db.query(Product).count() == 0 and db.query(Review).count() == 0:
+            return
         db.query(Review).delete()
         db.query(Product).delete()
         db.commit()
